@@ -4,24 +4,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Clan LKING | World of Tanks Lesta</title>
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚔️</text></svg>">
+    <link rel="icon" type="image/svg+xml" href="image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚔️</text></svg>">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        /* === ПЕРЕМЕННЫЕ И БАЗА === */
         :root {
-            --primary: #c9a227;
-            --primary-hover: #e0b845;
-            --secondary: #0077b6;
-            --secondary-hover: #0096c7;
-            --bg-dark: #0f0f19;
-            --bg-card: rgba(30, 30, 50, 0.85);
-            --bg-card-hover: rgba(40, 40, 70, 0.95);
-            --text-primary: #ffffff;
-            --text-secondary: #b0b0c0;
-            --border-radius: 16px;
-            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
-            --shadow-md: 0 8px 25px rgba(0, 0, 0, 0.4);
-            --shadow-lg: 0 15px 40px rgba(0, 0, 0, 0.5);
-            --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            --primary: #ffbf48;
+            --primary-hover: #ffd97a;
+            --secondary: #be4a1d;
+            --secondary-hover: #d46233;
+            --bg-dark: #080808;
+            --bg-card: rgba(20, 20, 35, 0.9);
+            --bg-card-hover: rgba(35, 35, 55, 0.95);
+            --text-primary: #ffe7ff;
+            --text-secondary: rgba(255, 231, 255, 0.7);
+            --border-radius: 100px;
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.5);
+            --shadow-md: 0 8px 25px rgba(0, 0, 0, 0.6);
+            --shadow-lg: 0 15px 40px rgba(0, 0, 0, 0.8);
+            --transition: all 0.2s ease;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -31,96 +32,247 @@
             font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
             color: var(--text-primary);
             min-height: 100vh;
-            background: url('https://media.tenor.com/pi2fYoTdrAQAAAAi/skorpion-tank.gif') center/cover fixed;
+            background: var(--bg-dark);
             position: relative;
             line-height: 1.6;
+            overflow-x: hidden;
         }
 
         body::before {
             content: '';
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: linear-gradient(135deg, rgba(15,15,25,0.92) 0%, rgba(22,33,62,0.88) 100%);
-            z-index: -1;
+            background: radial-gradient(ellipse at center, rgba(30,20,40,0.8) 0%, rgba(8,8,8,1) 70%);
+            z-index: -2;
         }
 
-        .btn {
-            position: relative;
-            display: inline-flex;
+        /* === ЗАГРУЗОЧНЫЙ ЭКРАН (ВАШ ЛОАДЕР) === */
+        #loader-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: var(--bg-dark);
+            display: flex;
             align-items: center;
-            gap: 10px;
-            padding: 14px 28px;
-            background: linear-gradient(135deg, var(--secondary) 0%, #005f8a 100%);
-            color: white;
-            border: none;
-            border-radius: var(--border-radius);
-            font-size: 1rem;
-            font-weight: 600;
-            text-decoration: none;
-            cursor: pointer;
-            overflow: hidden;
-            transition: var(--transition);
-            box-shadow: var(--shadow-md);
-            z-index: 1;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
         }
 
-        .btn::before {
-            content: '';
-            position: absolute;
-            top: 0; left: -100%;
-            width: 100%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-            transition: left 0.5s;
-            z-index: -1;
-        }
-
-        .btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 12px 35px rgba(0, 119, 182, 0.5);
-            background: linear-gradient(135deg, var(--secondary-hover) 0%, #0077b6 100%);
-        }
-
-        .btn:hover::before { left: 100%; }
-        .btn:active { transform: translateY(-1px) scale(0.98); box-shadow: var(--shadow-sm); }
-
-        .btn .ripple {
-            position: absolute;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.5);
-            transform: scale(0);
-            animation: ripple-animation 0.6s ease-out;
+        #loader-overlay.hidden {
+            opacity: 0;
+            visibility: hidden;
             pointer-events: none;
         }
 
-        @keyframes ripple-animation {
-            to { transform: scale(4); opacity: 0; }
+        /* From Uiverse.io by andrew-manzyk */ 
+        .loader {
+            --color-one: #ffbf48;
+            --color-two: #be4a1d;
+            --color-three: #ffbf4780;
+            --color-four: #bf4a1d80;
+            --color-five: #ffbf4740;
+            --time-animation: 2s;
+            --size: 1.2;
+            position: relative;
+            border-radius: 50%;
+            transform: scale(var(--size));
+            box-shadow:
+                0 0 25px 0 var(--color-three),
+                0 20px 50px 0 var(--color-four);
+            animation: colorize calc(var(--time-animation) * 3) ease-in-out infinite;
         }
 
-        .btn-primary {
-            background: linear-gradient(135deg, var(--primary) 0%, #b89020 100%);
-            box-shadow: 0 8px 25px rgba(201, 162, 39, 0.4);
+        .loader::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border-top: solid 1px var(--color-one);
+            border-bottom: solid 1px var(--color-two);
+            background: linear-gradient(180deg, var(--color-five), var(--color-four));
+            box-shadow:
+                inset 0 10px 10px 0 var(--color-three),
+                inset 0 -10px 10px 0 var(--color-four);
         }
 
-        .btn-primary:hover {
-            background: linear-gradient(135deg, var(--primary-hover) 0%, #c9a227 100%);
-            box-shadow: 0 12px 35px rgba(201, 162, 39, 0.6);
+        .loader .box {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(180deg, var(--color-one) 30%, var(--color-two) 70%);
+            mask: url(#clipping);
+            -webkit-mask: url(#clipping);
         }
 
-        .btn-outline {
-            background: transparent;
-            border: 2px solid var(--primary);
-            color: var(--primary);
+        .loader svg {
+            position: absolute;
+            top: 0; left: 0;
         }
 
-        .btn-outline:hover { background: var(--primary); color: #1a1a2e; }
-        .btn-sm { padding: 10px 20px; font-size: 0.9rem; border-radius: 12px; }
-        .btn-icon { width: 40px; height: 40px; padding: 0; border-radius: 50%; justify-content: center; }
+        .loader svg #clipping {
+            filter: contrast(15);
+            animation: roundness calc(var(--time-animation) / 2) linear infinite;
+        }
 
+        .loader svg #clipping polygon {
+            filter: blur(7px);
+        }
+
+        .loader svg #clipping polygon:nth-child(1) {
+            transform-origin: 75% 25%;
+            transform: rotate(90deg);
+        }
+
+        .loader svg #clipping polygon:nth-child(2) {
+            transform-origin: 50% 50%;
+            animation: rotation var(--time-animation) linear infinite reverse;
+        }
+
+        .loader svg #clipping polygon:nth-child(3) {
+            transform-origin: 50% 60%;
+            animation: rotation var(--time-animation) linear infinite;
+            animation-delay: calc(var(--time-animation) / -3);
+        }
+
+        .loader svg #clipping polygon:nth-child(4),
+        .loader svg #clipping polygon:nth-child(5) {
+            transform-origin: 40% 40%;
+            animation: rotation var(--time-animation) linear infinite reverse;
+        }
+
+        .loader svg #clipping polygon:nth-child(5) {
+            animation-delay: calc(var(--time-animation) / -2);
+        }
+
+        .loader svg #clipping polygon:nth-child(6),
+        .loader svg #clipping polygon:nth-child(7) {
+            transform-origin: 60% 40%;
+            animation: rotation var(--time-animation) linear infinite;
+        }
+
+        .loader svg #clipping polygon:nth-child(7) {
+            animation-delay: calc(var(--time-animation) / -1.5);
+        }
+
+        @keyframes rotation {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes roundness {
+            0%, 60%, 100% { filter: contrast(15); }
+            20%, 40% { filter: contrast(3); }
+        }
+
+        @keyframes colorize {
+            0%, 100% { filter: hue-rotate(0deg); }
+            20% { filter: hue-rotate(-30deg); }
+            40% { filter: hue-rotate(-60deg); }
+            60% { filter: hue-rotate(-90deg); }
+            80% { filter: hue-rotate(-45deg); }
+        }
+
+        /* === КНОПКА (ВАШ СТИЛЬ) === */
+        /* From Uiverse.io by marcelodolza */ 
+        .button {
+            --white: #ffe7ff;
+            --bg: #080808;
+            --radius: 100px;
+            outline: none;
+            cursor: pointer;
+            border: 0;
+            position: relative;
+            border-radius: var(--radius);
+            background-color: var(--bg);
+            transition: var(--transition);
+            box-shadow:
+                inset 0 0.3rem 0.9rem rgba(255, 255, 255, 0.3),
+                inset 0 -0.1rem 0.3rem rgba(0, 0, 0, 0.7),
+                inset 0 -0.4rem 0.9rem rgba(255, 255, 255, 0.5),
+                0 3rem 3rem rgba(0, 0, 0, 0.3),
+                0 1rem 1rem -0.6rem rgba(0, 0, 0, 0.8);
+            margin: 8px;
+        }
+
+        .button .wrap {
+            font-size: 18px;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.7);
+            padding: 20px 36px;
+            border-radius: inherit;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .button .wrap p {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 0;
+            transition: var(--transition);
+            transform: translateY(2%);
+            mask-image: linear-gradient(to bottom, white 40%, transparent);
+        }
+
+        .button .wrap p span:nth-child(2) { display: none; }
+        .button:hover .wrap p span:nth-child(1) { display: none; }
+        .button:hover .wrap p span:nth-child(2) { display: inline-block; }
+
+        .button .wrap::before,
+        .button .wrap::after {
+            content: "";
+            position: absolute;
+            transition: var(--transition);
+        }
+
+        .button .wrap::before {
+            left: -15%; right: -15%; bottom: 25%; top: -100%;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.12);
+        }
+
+        .button .wrap::after {
+            left: 6%; right: 6%; top: 12%; bottom: 40%;
+            border-radius: 22px 22px 0 0;
+            box-shadow: inset 0 10px 8px -10px rgba(255, 255, 255, 0.8);
+            background: linear-gradient(180deg, rgba(255,255,255,0.3) 0%, transparent 50%, transparent 100%);
+        }
+
+        .button:hover {
+            box-shadow:
+                inset 0 0.3rem 0.5rem rgba(255, 255, 255, 0.4),
+                inset 0 -0.1rem 0.3rem rgba(0, 0, 0, 0.7),
+                inset 0 -0.4rem 0.9rem rgba(255, 255, 255, 0.7),
+                0 3rem 3rem rgba(0, 0, 0, 0.3),
+                0 1rem 1rem -0.6rem rgba(0, 0, 0, 0.8);
+        }
+
+        .button:hover .wrap::before { transform: translateY(-5%); }
+        .button:hover .wrap::after { opacity: 0.4; transform: translateY(5%); }
+        .button:hover .wrap p { transform: translateY(-4%); }
+        .button:active { transform: translateY(4px); }
+
+        .button-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            box-shadow:
+                inset 0 0.3rem 0.9rem rgba(255,191,72,0.4),
+                0 3rem 3rem rgba(190,74,29,0.4);
+        }
+
+        .button-primary .wrap { color: #080808; font-weight: 600; }
+        .button-primary:hover { filter: brightness(1.1); }
+
+        /* === ШАПКА === */
         header {
-            background: rgba(26, 26, 46, 0.95);
+            background: rgba(15, 15, 25, 0.95);
             backdrop-filter: blur(20px);
             padding: 16px 0;
-            border-bottom: 1px solid rgba(201, 162, 39, 0.3);
+            border-bottom: 1px solid rgba(255, 191, 72, 0.2);
             position: sticky;
             top: 0;
             z-index: 100;
@@ -152,6 +304,7 @@
         @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
         .logo span { color: var(--text-primary); }
 
+        /* === ГЕРОЙ === */
         .hero { text-align: center; padding: 80px 20px 60px; animation: fadeInUp 0.8s ease-out; }
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
 
@@ -159,20 +312,20 @@
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            background: linear-gradient(135deg, var(--primary), #b89020);
-            color: #1a1a2e;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: #080808;
             padding: 10px 24px;
             border-radius: 50px;
             font-weight: 700;
             font-size: 0.95rem;
             margin-bottom: 24px;
-            box-shadow: 0 4px 20px rgba(201, 162, 39, 0.4);
+            box-shadow: 0 4px 20px rgba(255, 191, 72, 0.4);
             animation: pulse 2s infinite;
         }
 
         @keyframes pulse {
-            0%, 100% { box-shadow: 0 4px 20px rgba(201, 162, 39, 0.4); }
-            50% { box-shadow: 0 4px 35px rgba(201, 162, 39, 0.7); }
+            0%, 100% { box-shadow: 0 4px 20px rgba(255, 191, 72, 0.4); }
+            50% { box-shadow: 0 4px 35px rgba(255, 191, 72, 0.7); }
         }
 
         .hero h1 {
@@ -180,16 +333,17 @@
             margin-bottom: 20px;
             text-transform: uppercase;
             letter-spacing: -1px;
-            background: linear-gradient(135deg, #fff 0%, var(--primary) 100%);
+            background: linear-gradient(135deg, var(--text-primary) 0%, var(--primary) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            text-shadow: 0 0 40px rgba(201, 162, 39, 0.3);
+            text-shadow: 0 0 40px rgba(255, 191, 72, 0.3);
         }
 
         .hero p { font-size: 1.25rem; color: var(--text-secondary); max-width: 650px; margin: 0 auto 35px; }
         .hero-buttons { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
 
+        /* === СЕКЦИИ === */
         section { padding: 60px 0; }
         .section-header { text-align: center; margin-bottom: 50px; }
 
@@ -212,6 +366,198 @@
 
         .section-subtitle { color: var(--text-secondary); margin-top: 15px; font-size: 1.1rem; }
 
+        /* === ПОИСК СОКЛАНОВЦЕВ === */
+        .search-section {
+            background: linear-gradient(180deg, rgba(20,20,35,0.5) 0%, transparent 100%);
+        }
+
+        .search-container {
+            max-width: 700px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .search-box {
+            position: relative;
+            margin: 30px auto;
+            max-width: 500px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 18px 24px 18px 55px;
+            font-size: 1.1rem;
+            border: 2px solid rgba(255, 191, 72, 0.3);
+            border-radius: var(--border-radius);
+            background: var(--bg-card);
+            color: var(--text-primary);
+            transition: var(--transition);
+            outline: none;
+        }
+
+        .search-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(255, 191, 72, 0.2);
+        }
+
+        .search-input::placeholder { color: var(--text-secondary); }
+
+        .search-icon {
+            position: absolute;
+            left: 22px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--primary);
+            font-size: 1.2rem;
+        }
+
+        .search-hint {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            margin-top: 12px;
+        }
+
+        .search-hint strong { color: var(--primary); }
+
+        /* === РЕЗУЛЬТАТЫ ПОИСКА === */
+        .search-results {
+            margin-top: 30px;
+            display: none;
+        }
+
+        .search-results.active { display: block; animation: fadeIn 0.4s ease; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .result-card {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 24px;
+            margin-bottom: 16px;
+            border: 1px solid rgba(255, 191, 72, 0.15);
+            transition: var(--transition);
+            text-align: left;
+        }
+
+        .result-card:hover {
+            border-color: var(--primary);
+            transform: translateX(5px);
+            background: var(--bg-card-hover);
+        }
+
+        .result-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 16px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .result-avatar {
+            width: 50px; height: 50px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.3rem;
+            color: #080808;
+            flex-shrink: 0;
+        }
+
+        .result-name {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .result-rank {
+            display: inline-block;
+            padding: 4px 14px;
+            background: rgba(255, 191, 72, 0.15);
+            color: var(--primary);
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-top: 4px;
+        }
+
+        .result-info {
+            display: grid;
+            gap: 12px;
+        }
+
+        .info-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        .info-row i {
+            color: var(--primary);
+            width: 20px;
+            text-align: center;
+        }
+
+        .info-row a {
+            color: var(--primary);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .info-row a:hover { color: var(--primary-hover); text-decoration: underline; }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .status-online {
+            background: rgba(46, 204, 113, 0.15);
+            color: #2ecc71;
+        }
+
+        .status-online::before {
+            content: '';
+            width: 8px; height: 8px;
+            background: #2ecc71;
+            border-radius: 50%;
+            animation: pulse-dot 2s infinite;
+        }
+
+        .status-offline {
+            background: rgba(102, 102, 102, 0.15);
+            color: #888;
+        }
+
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.6; transform: scale(0.9); }
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-secondary);
+        }
+
+        .no-results i {
+            font-size: 3rem;
+            color: rgba(255, 191, 72, 0.3);
+            margin-bottom: 16px;
+            display: block;
+        }
+
+        /* === РАСПИСАНИЕ === */
         .schedule-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -222,7 +568,7 @@
 
         .schedule-card {
             background: var(--bg-card);
-            border-radius: var(--border-radius);
+            border-radius: 20px;
             padding: 24px;
             border-left: 4px solid;
             transition: var(--transition);
@@ -246,7 +592,7 @@
         }
 
         .schedule-card .time {
-            background: rgba(201, 162, 39, 0.15);
+            background: rgba(255, 191, 72, 0.15);
             color: var(--primary);
             padding: 4px 14px;
             border-radius: 20px;
@@ -256,6 +602,7 @@
 
         .schedule-card p { color: var(--text-secondary); font-size: 1rem; }
 
+        /* === ИНФО КАРТОЧКИ === */
         .info-cards {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -267,7 +614,7 @@
         .info-card {
             background: var(--bg-card);
             padding: 32px 28px;
-            border-radius: var(--border-radius);
+            border-radius: 20px;
             text-align: center;
             border: 1px solid rgba(255,255,255,0.08);
             transition: var(--transition);
@@ -283,25 +630,26 @@
 
         .info-card-icon {
             width: 60px; height: 60px;
-            background: linear-gradient(135deg, var(--primary), #b89020);
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
             border-radius: 16px;
             display: flex;
             align-items: center;
             justify-content: center;
             margin: 0 auto 20px;
             font-size: 1.5rem;
-            color: #1a1a2e;
-            box-shadow: 0 8px 25px rgba(201, 162, 39, 0.4);
+            color: #080808;
+            box-shadow: 0 8px 25px rgba(255, 191, 72, 0.4);
         }
 
         .info-card h3 { color: var(--text-primary); margin-bottom: 12px; font-size: 1.3rem; }
         .info-card p { color: var(--text-secondary); font-size: 1rem; margin-bottom: 18px; font-family: 'SF Mono', 'Fira Code', monospace; }
 
+        /* === ФУТЕР === */
         footer {
             background: rgba(10, 10, 20, 0.98);
             padding: 40px 0 30px;
             text-align: center;
-            border-top: 1px solid rgba(201, 162, 39, 0.2);
+            border-top: 1px solid rgba(255, 191, 72, 0.2);
             margin-top: 40px;
         }
 
@@ -316,6 +664,7 @@
 
         .fade-in.visible { opacity: 1; transform: translateY(0); }
 
+        /* === АДАПТИВ === */
         @media (max-width: 768px) {
             .header-content { flex-direction: column; text-align: center; padding: 10px 0; }
             .hero { padding: 50px 20px 40px; }
@@ -325,34 +674,61 @@
             .btn { width: 100%; max-width: 300px; justify-content: center; }
             section { padding: 45px 0; }
             h2 { font-size: 1.7rem; }
+            .button .wrap { padding: 16px 28px; font-size: 16px; }
+            .search-input { padding: 16px 20px 16px 50px; font-size: 1rem; }
         }
 
         .text-center { text-align: center; }
         .mt-2 { margin-top: 1rem; }
         .mb-3 { margin-bottom: 1.5rem; }
 
-        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: var(--bg-dark); }
-        ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 3px; }
     </style>
 </head>
 <body>
 
-    <!-- Шапка -->
+    <!-- ЗАГРУЗОЧНЫЙ ЭКРАН -->
+    <div id="loader-overlay">
+        <!-- From Uiverse.io by andrew-manzyk --> 
+        <div class="loader">
+            <svg width="100" height="100" viewBox="0 0 100 100">
+                <defs>
+                    <mask id="clipping">
+                        <polygon points="0,0 100,0 100,100 0,100" fill="black"></polygon>
+                        <polygon points="25,25 75,25 50,75" fill="white"></polygon>
+                        <polygon points="50,25 75,75 25,75" fill="white"></polygon>
+                        <polygon points="35,35 65,35 50,65" fill="white"></polygon>
+                        <polygon points="35,35 65,35 50,65" fill="white"></polygon>
+                        <polygon points="35,35 65,35 50,65" fill="white"></polygon>
+                        <polygon points="35,35 65,35 50,65" fill="white"></polygon>
+                    </mask>
+                </defs>
+            </svg>
+            <div class="box"></div>
+        </div>
+    </div>
+
+    <!-- ШАПКА -->
     <header>
         <div class="container header-content">
             <div class="logo">
                 <span class="logo-icon">⚔️</span>
                 LKING <span>| WoT Lesta</span>
             </div>
-            <a href="ts3server://ts.lking-clan.ru:9987" class="btn btn-primary" title="Подключиться к TeamSpeak">
-                <i class="fa-solid fa-microphone-lines"></i>
-                TeamSpeak
+            <a href="ts3server://ts.lking-clan.ru:9987" class="button button-primary">
+                <div class="wrap">
+                    <p>
+                        <span><i class="fa-solid fa-microphone-lines"></i> TeamSpeak</span>
+                        <span><i class="fa-solid fa-check"></i> Подключено</span>
+                    </p>
+                </div>
             </a>
         </div>
     </header>
 
-    <!-- Герой -->
+    <!-- ГЕРОЙ -->
     <section class="hero">
         <div class="container">
             <span class="game-badge">
@@ -362,19 +738,50 @@
             <h1>Clan LKING</h1>
             <p>Сильные танкисты. Чёткая координация. Победы в каждой битве. Присоединяйся к элите!</p>
             <div class="hero-buttons">
-                <a href="ts3server://ts.lking-clan.ru:9987" class="btn btn-primary ripple-btn">
-                    <i class="fa-solid fa-microphone-lines"></i>
-                    Подключиться к голосовому чату
-                </a>
-                <a href="#schedule" class="btn btn-outline ripple-btn">
-                    <i class="fa-regular fa-calendar"></i>
-                    Расписание
+                <button class="button button-primary" id="clanmates-btn">
+                    <div class="wrap">
+                        <p>
+                            <span><i class="fa-solid fa-users"></i> Соклановцы</span>
+                            <span><i class="fa-solid fa-search"></i> Найти</span>
+                        </p>
+                    </div>
+                </button>
+                <a href="#schedule" class="button">
+                    <div class="wrap">
+                        <p>
+                            <span><i class="fa-regular fa-calendar"></i> Расписание</span>
+                            <span><i class="fa-solid fa-arrow-right"></i> Смотреть</span>
+                        </p>
+                    </div>
                 </a>
             </div>
         </div>
     </section>
 
-    <!-- Расписание -->
+    <!-- ПОИСК СОКЛАНОВЦЕВ -->
+    <section class="search-section" id="clanmates">
+        <div class="container">
+            <div class="section-header fade-in">
+                <h2><i class="fa-solid fa-magnifying-glass"></i> Поиск соклановцев</h2>
+                <p class="section-subtitle">Найдите игрока и узнайте, где он сейчас</p>
+            </div>
+            
+            <div class="search-container fade-in">
+                <div class="search-box">
+                    <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                    <input type="text" class="search-input" id="member-search" placeholder="Введите ник игрока..." autocomplete="off">
+                </div>
+                <p class="search-hint">💡 Подсказка: введите <strong>SteelWolf</strong>, <strong>_𝓣𝓪𝓡𝓪𝓝𝓽𝓲𝓝𝓸_7</strong> или <strong>IronFist</strong></p>
+                
+                <!-- Результаты поиска -->
+                <div class="search-results" id="search-results">
+                    <!-- Заполняется через JS -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- РАСПИСАНИЕ -->
     <section id="schedule">
         <div class="container">
             <div class="section-header fade-in">
@@ -406,7 +813,7 @@
         </div>
     </section>
 
-    <!-- Инфо -->
+    <!-- КОНТАКТЫ -->
     <section id="info">
         <div class="container">
             <div class="section-header fade-in">
@@ -420,8 +827,13 @@
                     </div>
                     <h3>Игровой сервер</h3>
                     <p>RU | LKING [RUS]</p>
-                    <button class="btn btn-sm btn-outline ripple-btn" onclick="copyText('EU | LKING [RUS]')">
-                        <i class="fa-regular fa-copy"></i> Копировать
+                    <button class="button" onclick="copyText('RU | LKING [RUS]')">
+                        <div class="wrap">
+                            <p>
+                                <span><i class="fa-regular fa-copy"></i> Копировать</span>
+                                <span><i class="fa-solid fa-check"></i> Скопировано</span>
+                            </p>
+                        </div>
                     </button>
                 </div>
                 <div class="info-card fade-in">
@@ -430,75 +842,243 @@
                     </div>
                     <h3>TeamSpeak</h3>
                     <p>TS3V.RU:2174</p>
-                    <button class="btn btn-sm btn-outline ripple-btn" onclick="copyText('TS3V.RU:2174')">
-                        <i class="fa-regular fa-copy"></i> Копировать
+                    <button class="button" onclick="copyText('TS3V.RU:2174')">
+                        <div class="wrap">
+                            <p>
+                                <span><i class="fa-regular fa-copy"></i> Копировать</span>
+                                <span><i class="fa-solid fa-check"></i> Скопировано</span>
+                            </p>
+                        </div>
                     </button>
                 </div>
                 <div class="info-card fade-in">
-                    <div class="info-card-icon" style="background: linear-gradient(135deg, #5865F2, #4752C4); color: white;">
+                    <div class="info-card-icon" style="background: linear-gradient(135deg, #5865F2, #4752C4); color: #080808;">
                         <i class="fa-brands fa-discord"></i>
                     </div>
                     <h3>Discord</h3>
                     <p>discord.gg/lking</p>
-                    <a href="https://discord.gg/lking" target="_blank" class="btn btn-sm" style="background: linear-gradient(135deg, #5865F2, #4752C4); border: none;">
-                        <i class="fa-solid fa-arrow-up-right-from-square"></i> Перейти
+                    <a href="https://discord.gg/lking" target="_blank" class="button" style="background: linear-gradient(135deg, #5865F2, #4752C4);">
+                        <div class="wrap">
+                            <p>
+                                <span><i class="fa-solid fa-arrow-up-right-from-square"></i> Перейти</span>
+                                <span><i class="fa-solid fa-check"></i> Открыто</span>
+                            </p>
+                        </div>
                     </a>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Футер -->
+    <!-- ФУТЕР -->
     <footer>
         <div class="container">
             <p>&copy; 2026 Clan LKING | World of Tanks Lesta</p>
-            <p class="mt-2">Сайт работает на Python By <span class="signature">_𝓣𝓪𝓡𝓪𝓝𝓣𝓲𝓝𝓸_7</span> 🐍</p>
+            <p class="mt-2">Сайт работает на Python By <span class="signature">_𝓣𝓪𝓡𝓪𝓝𝓽𝓲𝓝𝓸_7</span> 🐍</p>
             <div style="margin-top: 20px; display: flex; gap: 12px; justify-content: center;">
-                <a href="https://t.me/funkisas1bot" target="_blank" class="btn btn-icon btn-sm ripple-btn" style="background: linear-gradient(135deg, #2CA5E0, #1A7F9E); border: none;" title="Telegram">
-                    <i class="fa-brands fa-telegram"></i>
+                <a href="https://t.me/funkisas1bot" target="_blank" class="button" style="background: linear-gradient(135deg, #2CA5E0, #1A7F9E); padding: 0; width: 44px; height: 44px; border-radius: 50%;">
+                    <div class="wrap" style="padding: 0; display: flex; align-items: center; justify-content: center;">
+                        <i class="fa-brands fa-telegram" style="font-size: 1.2rem;"></i>
+                    </div>
                 </a>
-                <a href="https://discord.gg/lking" target="_blank" class="btn btn-icon btn-sm ripple-btn" style="background: linear-gradient(135deg, #5865F2, #4752C4); border: none;" title="Discord">
-                    <i class="fa-brands fa-discord"></i>
+                <a href="https://discord.gg/lking" target="_blank" class="button" style="background: linear-gradient(135deg, #5865F2, #4752C4); padding: 0; width: 44px; height: 44px; border-radius: 50%;">
+                    <div class="wrap" style="padding: 0; display: flex; align-items: center; justify-content: center;">
+                        <i class="fa-brands fa-discord" style="font-size: 1.2rem;"></i>
+                    </div>
                 </a>
             </div>
         </div>
     </footer>
 
     <script>
-        // Ripple эффект
-        document.querySelectorAll('.ripple-btn').forEach(button => {
-            button.addEventListener('click', function(e) {
-                const ripple = document.createElement('span');
-                ripple.classList.add('ripple');
-                const rect = button.getBoundingClientRect();
-                const size = Math.max(rect.width, rect.height);
-                const x = e.clientX - rect.left - size / 2;
-                const y = e.clientY - rect.top - size / 2;
-                ripple.style.width = ripple.style.height = `${size}px`;
-                ripple.style.left = `${x}px`;
-                ripple.style.top = `${y}px`;
-                this.appendChild(ripple);
-                setTimeout(() => ripple.remove(), 600);
-            });
+        // === СКРЫТИЕ ЛОАДЕРА ПОСЛЕ ЗАГРУЗКИ ===
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.getElementById('loader-overlay').classList.add('hidden');
+            }, 2500);
         });
 
-        // Копирование текста
+        // === БАЗА ДАННЫХ ИГРОКОВ КЛАНА ===
+        const clanMembers = [
+            {
+                nick: '_𝓣𝓪𝓡𝓪𝓝𝓽𝓲𝓝𝓸_7',
+                rank: 'Создатель Сайта',
+                status: 'online',
+                location: 'TeamSpeak: Канал "Молчун"',
+                lastSeen: 'Сейчас в игре',
+                stats: 'WN8: 1741 | WR: 64.2%',
+                avatar: '🎖️'
+            },
+            {
+                nick: '__PANDORA__',
+                rank: 'Командир',
+                status: 'online',
+                location: 'TeamSpeak: Канал "Штаб"',
+                lastSeen: 'Офлайн',
+                stats: 'WN8: 1282 | WR: 61.8%',
+                avatar: '⚡'
+            },
+            {
+                nick: 'IronFist_92',
+                rank: 'Ветеран',
+                status: 'online',
+                location: 'Discord: Голосовой #танки',
+                lastSeen: 'Укрепрайон',
+                stats: 'WN8: 2450 | WR: 59.1%',
+                avatar: '🔥'
+            },
+            {
+                nick: 'ShadowHunter',
+                rank: 'Элита',
+                status: 'offline',
+                location: 'Офлайн',
+                lastSeen: '2 часа назад',
+                stats: 'WN8: 2180 | WR: 57.4%',
+                avatar: '💎'
+            },
+            {
+                nick: 'TankMaster_X',
+                rank: 'Элита',
+                status: 'online',
+                location: 'TeamSpeak: Канал "Атака"',
+                lastSeen: 'В бою (Клановка)',
+                stats: 'WN8: 2620 | WR: 60.3%',
+                avatar: '🛡️'
+            },
+            {
+                nick: 'GhostRecon',
+                rank: 'Боец',
+                status: 'offline',
+                location: 'Офлайн',
+                lastSeen: 'Вчера',
+                stats: 'WN8: 1890 | WR: 55.7%',
+                avatar: '🎯'
+            },
+            {
+                nick: 'WarLord_Pro',
+                rank: 'Боец',
+                status: 'online',
+                location: 'В игре (Гараж)',
+                lastSeen: 'Сейчас онлайн',
+                stats: 'WN8: 2010 | WR: 56.9%',
+                avatar: '⚔️'
+            },
+            {
+                nick: 'BlitzKrieg_77',
+                rank: 'Новичок',
+                status: 'offline',
+                location: 'Офлайн',
+                lastSeen: '3 дня назад',
+                stats: 'WN8: 1420 | WR: 52.1%',
+                avatar: '🚀'
+            }
+        ];
+
+        // === ПОИСК ИГРОКОВ ===
+        const searchInput = document.getElementById('member-search');
+        const resultsContainer = document.getElementById('search-results');
+        const clanmatesBtn = document.getElementById('clanmates-btn');
+
+        // Прокрутка к поиску при клике на кнопку
+        clanmatesBtn.addEventListener('click', () => {
+            document.getElementById('clanmates').scrollIntoView({ behavior: 'smooth' });
+            searchInput.focus();
+        });
+
+        // Поиск при вводе
+        searchInput.addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase().trim();
+            
+            if (query.length < 2) {
+                resultsContainer.classList.remove('active');
+                resultsContainer.innerHTML = '';
+                return;
+            }
+
+            const matches = clanMembers.filter(member => 
+                member.nick.toLowerCase().includes(query) ||
+                member.rank.toLowerCase().includes(query)
+            );
+
+            displayResults(matches, query);
+        });
+
+        // Отображение результатов
+        function displayResults(matches, query) {
+            if (matches.length === 0) {
+                resultsContainer.innerHTML = `
+                    <div class="no-results">
+                        <i class="fa-regular fa-face-frown"></i>
+                        <p>Игрок <strong>"${query}"</strong> не найден в клане LKING</p>
+                        <p style="margin-top: 10px; font-size: 0.9rem;">Попробуйте проверить написание ника или обратитесь к командиру</p>
+                    </div>
+                `;
+                resultsContainer.classList.add('active');
+                return;
+            }
+
+            let html = '';
+            matches.forEach(member => {
+                const statusClass = member.status === 'online' ? 'status-online' : 'status-offline';
+                const statusText = member.status === 'online' ? 'Онлайн' : 'Офлайн';
+                
+                html += `
+                    <div class="result-card">
+                        <div class="result-header">
+                            <div class="result-avatar">${member.avatar}</div>
+                            <div>
+                                <div class="result-name">${member.nick}</div>
+                                <span class="result-rank">${member.rank}</span>
+                            </div>
+                            <span class="status-badge ${statusClass}" style="margin-left: auto;">
+                                ${statusText}
+                            </span>
+                        </div>
+                        <div class="result-info">
+                            <div class="info-row">
+                                <i class="fa-solid fa-location-dot"></i>
+                                <span>${member.location}</span>
+                            </div>
+                            <div class="info-row">
+                                <i class="fa-regular fa-clock"></i>
+                                <span>${member.lastSeen}</span>
+                            </div>
+                            <div class="info-row">
+                                <i class="fa-solid fa-chart-line"></i>
+                                <span>${member.stats}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            resultsContainer.innerHTML = html;
+            resultsContainer.classList.add('active');
+        }
+
+        // Поиск по Enter
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                searchInput.blur();
+            }
+        });
+
+        // === КОПИРОВАНИЕ ТЕКСТА ===
         function copyText(text) {
             navigator.clipboard.writeText(text).then(() => {
                 const btn = event.currentTarget;
                 const originalHTML = btn.innerHTML;
-                btn.innerHTML = '<i class="fa-solid fa-check"></i> Скопировано!';
-                btn.style.background = 'var(--primary)';
-                btn.style.color = '#1a1a2e';
+                // Временная смена текста кнопки
+                btn.querySelector('p span:nth-child(1)').style.display = 'none';
+                btn.querySelector('p span:nth-child(2)').style.display = 'inline-block';
                 setTimeout(() => {
-                    btn.innerHTML = originalHTML;
-                    btn.style.background = '';
-                    btn.style.color = '';
+                    btn.querySelector('p span:nth-child(1)').style.display = '';
+                    btn.querySelector('p span:nth-child(2)').style.display = '';
                 }, 2000);
             });
         }
 
-        // Анимация появления при скролле
+        // === АНИМАЦИЯ ПОЯВЛЕНИЯ ПРИ СКРОЛЛЕ ===
         const observerOptions = { threshold: 0.1, rootMargin: '0px 0px -50px 0px' };
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
@@ -510,7 +1090,7 @@
         }, observerOptions);
         document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
 
-        // Плавная прокрутка
+        // === ПЛАВНАЯ ПРОКРУТКА ===
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function(e) {
                 e.preventDefault();
@@ -518,6 +1098,16 @@
                 if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
             });
         });
+
+        // === ДЕМО: показать результат для SteelWolf при первом посещении ===
+        if (!localStorage.getItem('lk-search-seen')) {
+            setTimeout(() => {
+                searchInput.value = '';
+                searchInput.dispatchEvent(new Event('input'));
+                document.getElementById('clanmates').scrollIntoView({ behavior: 'smooth' });
+            }, 3500);
+            localStorage.setItem('lk-search-seen', 'true');
+        }
     </script>
 </body>
 </html>
